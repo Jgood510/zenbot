@@ -1,5 +1,16 @@
 WARNING: project is no longer actively maintained, make sure to update any dependencies if you plan on using this in your project.
 
+## ⚡ 2026 Community Revival
+
+This fork brings Zenbot back to life on a modern stack:
+
+- **Node 20** — dependencies modernized; MongoDB driver updated (callbacks → promises).
+- **Dead exchanges pruned** — `bittrex`, `gdax`, `hitbtc`, `therock` adapters removed (shut down or defunct).
+- **Coinbase adapter fixed** — maker/taker fees added (missing fees caused silent no-trade behavior); rate limiting enabled.
+- **Genetic backtester running** — `scripts/genetic_backtester` works end-to-end again (path/cwd fixes, `json2csv` pinned).
+- **Verified** — backfill, sim/paper trade, and the genetic optimizer all run green on Node 20 (paper/sim only); the Docker image builds and the sim is smoke-tested inside it.
+- **Known limitation** — the 2018-era native `tulind`/`talib` indicator libraries don't compile on modern Node, so tulind-based strategies are unavailable. Everything else runs on the pure-JS path.
+
 ![zenbot logo](assets/logo.png)
 
 > “To follow the path, look to the master, follow the master, walk with the master, see through the master, become the master.”

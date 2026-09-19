@@ -65,8 +65,7 @@ module.exports = function (program, conf) {
           start_time = new Date().getTime() - (86400000 * cmd.days)
         }
       }
-      resume_markers.find({selector: selector.normalized}).toArray(function (err, results) {
-        if (err) throw err
+      resume_markers.find({selector: selector.normalized}).toArray().then(function (results) {
         markers = results.sort(function (a, b) {
           if (mode === 'backward') {
             if (a.to > b.to) return -1
@@ -79,7 +78,7 @@ module.exports = function (program, conf) {
           return 0
         })
         getNext()
-      })
+      }).catch(function (err) { throw err })
 
       function getNext () {
         var opts = {product_id: selector.product_id}

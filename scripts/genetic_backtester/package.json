@@ -3,8 +3,8 @@
   "version": "0.2.0",
   "description": "Parallel simulation runner with CSV results",
   "dependencies": {
-    "geneticalgorithm": "git+https://github.com/panchishin/geneticalgorithm.git",
-    "json2csv": "^4.5.4",
+    "geneticalgorithm": "^1.0.1",
+    "json2csv": "^5.0.7",
     "round-precision": "^1.0.0",
     "run-parallel-limit": "^1.1.0",
     "shelljs": "^0.8.5",

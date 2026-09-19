@@ -269,13 +269,13 @@ module.exports = function (program, conf) {
           .sort(opts.sort)
           .limit(opts.limit)
 
-        var totalTrades = await collectionCursor.count(true)
-        const collectionCursorStream = collectionCursor.stream()
+        var totalTrades = await tradesCollection.countDocuments(opts.query)
 
         var numTrades = 0
         var lastTrade
 
-        var onCollectionCursorEnd = () => {
+        var onCollectionCursorEnd = async () => {
+          await collectionCursor.close()
           if (numTrades === 0) {
             if (so.symmetrical && !reversing) {
               reversing = true
@@ -291,15 +291,14 @@ module.exports = function (program, conf) {
               cursor = lastTrade.time
             }
           }
-          collectionCursorStream.close()
           return getNext()
         }
 
-        if(totalTrades === 0) {
-          onCollectionCursorEnd()
+        if (totalTrades === 0) {
+          return onCollectionCursorEnd()
         }
 
-        collectionCursorStream.on('data', function(trade) {
+        for await (const trade of collectionCursor) {
           lastTrade = trade
           numTrades++
           if (so.symmetrical && reversing) {
@@ -307,11 +306,8 @@ module.exports = function (program, conf) {
             trade.time = reverse_point + (reverse_point - trade.time)
           }
           eventBus.emit('trade', trade)
-
-          if (numTrades && totalTrades && totalTrades == numTrades) {
-            onCollectionCursorEnd()
-          }
-        })
+        }
+        return onCollectionCursorEnd()
       }
 
       return getNext()

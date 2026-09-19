@@ -13,7 +13,7 @@
  * --floatScanWindow                      Time window used for analyzing data be adjusted for every generation.
  * --population=<int>                     Population per strategy.
  * --maxCores=<int>                       Maximum processes to execute at a time. Default is the # of cpu cores in the system.
- * --selector=<exchange.marketPair>       The exchange and market pair to target. For example, --selector=gdax.BTC-USDC for Coinbase Pro market with Bitcoin-USDCoin pair.
+ * --selector=<exchange.marketPair>       The exchange and market pair to target. For example, --selector=coinbase.BTC-USD for the Coinbase market with Bitcoin-US Dollar pair.
  * --asset_capital=<float>                Amount of coin available to the simulator to start with.
  * --currency_capital=<float>             Amount of capital/base currency available to the sim to start with.
  * --days=<int>                           Amount of days to use when backfilling. 

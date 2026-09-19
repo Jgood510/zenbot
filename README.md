@@ -1,3 +1,7 @@
+# HOV — Zenbot brought back to life
+
+_"Risen from the dead." A 2026 revival of the abandoned [DeviaVir/zenbot](https://github.com/DeviaVir/zenbot) command-line crypto trading bot.
+
 WARNING: project is no longer actively maintained, make sure to update any dependencies if you plan on using this in your project.
 
 ## ⚡ 2026 Community Revival

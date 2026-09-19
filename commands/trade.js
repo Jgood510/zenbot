@@ -494,8 +494,7 @@ module.exports = function (program, conf) {
             trade_cursor = s.exchange.getCursor(query_start)
             opts.query.time = {$gte: query_start}
           }
-          trades.find(opts.query).limit(opts.limit).sort(opts.sort).toArray(function (err, trades) {
-            if (err) throw err
+          trades.find(opts.query).limit(opts.limit).sort(opts.sort).toArray().then(function (trades) {
             if (trades.length && so.use_prev_trades) {
               let prevOpts = {
                 query: {
@@ -506,12 +505,11 @@ module.exports = function (program, conf) {
               if (!so.min_prev_trades) {
                 prevOpts.query.time = {$gte : trades[0].time}
               }
-              my_trades.find(prevOpts.query).sort({$natural:-1}).limit(prevOpts.limit).toArray(function (err, my_prev_trades) {
-                if (err) throw err
+              my_trades.find(prevOpts.query).sort({$natural:-1}).limit(prevOpts.limit).toArray().then(function (my_prev_trades) {
                 if (my_prev_trades.length) {
                   s.my_prev_trades = my_prev_trades.reverse().slice(0) // simple copy, less recent executed first
                 }
-              })
+              }).catch(function (err) { throw err })
             }
             if (!trades.length) {
               var head = '------------------------------------------ INITIALIZE  OUTPUT ------------------------------------------'
@@ -537,8 +535,7 @@ module.exports = function (program, conf) {
                   options: so
                 }
                 session._id = session.id
-                sessions.find({selector: so.selector.normalized}).limit(1).sort({started: -1}).toArray(function (err, prev_sessions) {
-                  if (err) throw err
+                sessions.find({selector: so.selector.normalized}).limit(1).sort({started: -1}).toArray().then(function (prev_sessions) {
                   var prev_session = prev_sessions[0]
                   if (prev_session && !cmd.reset_profit) {
                     if (prev_session.orig_capital && prev_session.orig_price && prev_session.deposit === so.deposit && ((so.mode === 'paper' && !raw_opts.currency_capital && !raw_opts.asset_capital) || (so.mode === 'live' && prev_session.balance.asset == s.balance.asset && prev_session.balance.currency == s.balance.currency))) {
@@ -563,7 +560,7 @@ module.exports = function (program, conf) {
                     process.stdin.setRawMode(true)
                     process.stdin.on('keypress', executeKey)
                   }
-                })
+                }).catch(function (err) { throw err })
               })
               return
             }
@@ -573,7 +570,7 @@ module.exports = function (program, conf) {
               if (err) throw err
               setImmediate(getNext)
             })
-          })
+          }).catch(function (err) { throw err })
         }
         engine.writeHeader()
         getNext()
@@ -628,11 +625,9 @@ module.exports = function (program, conf) {
               b.vs_buy_hold = (b.consolidated - b.buy_hold) / b.buy_hold
               conf.output.api.on && printTrade(false, false, true)
               if (so.mode === 'live') {
-                balances.replaceOne({_id: b.id}, b, {upsert: true}, function (err) {
-                  if (err) {
-                    console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving balance')
-                    console.error(err)
-                  }
+                balances.replaceOne({_id: b.id}, b, {upsert: true}).catch(function (err) {
+                  console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving balance')
+                  console.error(err)
                 })
               }
               session.balance = b
@@ -643,11 +638,10 @@ module.exports = function (program, conf) {
                 asset: s.balance.asset
               }
             }
-            sessions.replaceOne({_id: session.id}, session, {upsert: true}, function (err) {
-              if (err) {
-                console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving session')
-                console.error(err)
-              }
+            sessions.replaceOne({_id: session.id}, session, {upsert: true}).catch(function (err) {
+              console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving session')
+              console.error(err)
+            }).then(function () {
               if (s.period) {
                 engine.writeReport(true)
               } else {
@@ -699,11 +693,9 @@ module.exports = function (program, conf) {
                 console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving session')
                 console.error(err)
               }
-              resume_markers.replaceOne({_id: marker.id}, marker, {upsert: true}, function (err) {
-                if (err) {
-                  console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving marker')
-                  console.error(err)
-                }
+              resume_markers.replaceOne({_id: marker.id}, marker, {upsert: true}).catch(function (err) {
+                console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving marker')
+                console.error(err)
               })
               if (s.my_trades.length > my_trades_size) {
                 s.my_trades.slice(my_trades_size).forEach(function (my_trade) {
@@ -712,11 +704,9 @@ module.exports = function (program, conf) {
                   my_trade.selector = so.selector.normalized
                   my_trade.session_id = session.id
                   my_trade.mode = so.mode
-                  my_trades.insertOne(my_trade, function (err) {
-                    if (err) {
-                      console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving my_trade')
-                      console.error(err)
-                    }
+                  my_trades.insertOne(my_trade).catch(function (err) {
+                    console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving my_trade')
+                    console.error(err)
                   })
                 })
                 my_trades_size = s.my_trades.length
@@ -728,11 +718,9 @@ module.exports = function (program, conf) {
                   period.session_id = session.id
                 }
                 period._id = period.id
-                periods.replaceOne({_id: period.id}, period, {upsert: true}, function (err) {
-                  if (err) {
-                    console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving my_trade')
-                    console.error(err)
-                  }
+                periods.replaceOne({_id: period.id}, period, {upsert: true}).catch(function (err) {
+                  console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving my_trade')
+                  console.error(err)
                 })
               }
               if (s.lookback.length > lookback_size) {
@@ -761,7 +749,7 @@ module.exports = function (program, conf) {
           }
           marker.to = marker.to ? Math.max(marker.to, trade_cursor) : trade_cursor
           marker.newest_time = Math.max(marker.newest_time, trade.time)
-          trades.insertOne(trade, function (err) {
+          trades.insertOne(trade).catch(function (err) {
             // ignore duplicate key errors
             if (err && err.code !== 11000) {
               console.error('\n' + moment().format('YYYY-MM-DD HH:mm:ss') + ' - error saving trade')

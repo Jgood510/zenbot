@@ -58,16 +58,14 @@ module.exports = function (cb) {
       (authMechanism ? '&authMechanism=' + authMechanism : '' )
   }
 
-  require('mongodb').MongoClient.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: true}, function (err, client) {
-    if (err) {
-      console.error('WARNING: MongoDB Connection Error: ', err)
-      console.error('WARNING: without MongoDB some features (such as backfilling/simulation) may be disabled.')
-      console.error('Attempted authentication string: ' + connectionString)
-      cb(null, zenbot)
-      return
-    }
+  require('mongodb').MongoClient.connect(connectionString).then(function (client) {
     var db = client.db(zenbot.conf.mongo.db)
     _.set(zenbot, 'conf.db.mongo', db)
+    cb(null, zenbot)
+  }).catch(function (err) {
+    console.error('WARNING: MongoDB Connection Error: ', err)
+    console.error('WARNING: without MongoDB some features (such as backfilling/simulation) may be disabled.')
+    console.error('Attempted authentication string: ' + connectionString)
     cb(null, zenbot)
   })
 }

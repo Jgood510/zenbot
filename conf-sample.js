@@ -17,19 +17,16 @@ c.mongo.replicaSet = process.env.ZENBOT_MONGO_REPLICASET || null
 c.mongo.authMechanism = process.env.ZENBOT_MONGO_AUTH_MECHANISM || null
 
 // default selector. only used if omitting [selector] argument from a command.
-c.selector = process.env.ZENBOT_DEFAULT_SELECTOR || 'gdax.BTC-USD'
+c.selector = process.env.ZENBOT_DEFAULT_SELECTOR || 'coinbase.BTC-USD'
 // name of default trade strategy
 c.strategy = process.env.ZENBOT_DEFAULT_STRATEGY || 'trend_ema'
 
 // Exchange API keys:
 
-// to enable GDAX trading, enter your API credentials:
-c.gdax = {}
-c.gdax.key = process.env.ZENBOT_GDAX_API_KEY || 'YOUR-API-KEY'
-c.gdax.b64secret = process.env.ZENBOT_GDAX_B64_SECRET || 'YOUR-API-SECRET'
-c.gdax.passphrase = process.env.ZENBOT_GDAX_PASSPHRASE || 'YOUR-API-PASSPHRASE'
-// set to true to trade on the sandbox platform API
-c.gdax.sandbox = process.env.ZENBOT_GDAX_SANDBOX || false
+// to enable Coinbase trading (ccxt unified 'coinbase', covers Advanced Trade), enter your API credentials:
+c.coinbase = {}
+c.coinbase.key = process.env.ZENBOT_COINBASE_API_KEY || 'YOUR-API-KEY'
+c.coinbase.secret = process.env.ZENBOT_COINBASE_SECRET || 'YOUR-API-SECRET'
 
 // to enable Poloniex trading, enter your API credentials:
 c.poloniex = {}
@@ -53,14 +50,6 @@ c.binance.secret = process.env.ZENBOT_BINANCE_SECRET || 'YOUR-API-SECRET'
 c.binanceus = {}
 c.binanceus.key = 'YOUR-API-KEY'
 c.binanceus.secret = 'YOUR-SECRET'
-
-// to enable Bittrex trading, enter your API credentials:
-c.bittrex = {}
-c.bittrex.key = process.env.ZENBOT_BITTREX_API_KEY || 'YOUR-API-KEY'
-c.bittrex.secret = process.env.ZENBOT_BITTREX_SECRET || 'YOUR-API-SECRET'
-// make sure to give your API key access to only: "Trade Limit" and "Read Info",
-// please note that this might change in the future.
-// please note that bittrex API is limited, you cannot use backfills or sims (paper/live trading only)
 
 // to enable Bitfinex trading, enter your API credentials:
 c.bitfinex = {}
@@ -89,16 +78,6 @@ c.gemini.key = process.env.ZENBOT_GEMINI_API_KEY || 'YOUR-API-KEY'
 c.gemini.secret = process.env.ZENBOT_GEMINI_SECRET || 'YOUR-API-SECRET'
 // set to false to trade on the live platform API
 c.gemini.sandbox = process.env.ZENBOT_GEMINI_SANDBOX || true
-
-// to enable hitBTC trading, enter your API credentials:
-c.hitbtc = {}
-c.hitbtc.key = process.env.ZENBOT_HITBTC_API_KEY || 'YOUR-API-KEY'
-c.hitbtc.secret = process.env.ZENBOT_HITBTC_SECRET || 'YOUR-API-SECRET'
-
-// to enable therock trading, enter your API credentials:
-c.therock = {}
-c.therock.key = process.env.ZENBOT_THEROCK_API_KEY || 'YOUR-API-KEY'
-c.therock.secret = process.env.ZENBOT_THEROCK_SECRET || 'YOUR-API-SECRET'
 
 // Optional stop-order triggers:
 
